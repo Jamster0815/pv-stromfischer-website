@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Über uns - PV-Stromfischer</title>
+    <link rel="icon" type="image/png" href="../PV-Stromfischer.png">
+    <link href="../fonts/fonts.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #FF6B35;
+            --accent-dark: #E85A2B;
+            --border: #d0d0d0;
+            --green: #27ae60;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border: #333333;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-bottom: 2px solid var(--border);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .logo img { height: 45px; }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--accent); }
+
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            width: 60px;
+            height: 32px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            left: 2px;
+            top: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle::before { transform: translateX(28px); }
+
+        .mobile-menu-btn {
+            display: none;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .about-section {
+            background: var(--bg-primary);
+            padding: 4rem 2rem;
+        }
+
+        .about-section h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-intro {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Info Cards */
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .info-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 2.5rem 2rem;
+            position: relative;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent);
+        }
+
+        .info-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .info-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .info-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        /* Statuten Section */
+        .statuten-section {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 3rem 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .statuten-section h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .statuten-section p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.2rem 2.5rem;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid var(--accent);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: var(--accent-dark);
+            border-color: var(--accent-dark);
+        }
+
+        .download-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Mission Section */
+        .mission-section {
+            background: var(--green);
+            color: white;
+            padding: 4rem 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .mission-section h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .mission-section p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+            opacity: 0.95;
+        }
+
+        /* Info Box */
+        .info-box-section {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 3rem 2rem;
+            margin: 3rem 0;
+        }
+
+        .info-box-section h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        .info-box {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .info-box p {
+            padding: 1.5rem;
+            background: var(--bg-primary);
+            border-left: 4px solid var(--accent);
+            line-height: 1.8;
+        }
+
+        .info-box strong {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Contact CTA */
+        .contact-cta {
+            background: var(--accent);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .contact-cta h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .contact-cta p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .contact-cta .btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: white;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .contact-cta .btn:hover {
+            background: transparent;
+            color: white;
+        }
+
+        footer {
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            body { padding-top: 70px; }
+
+            .mobile-menu-btn { display: block; }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                height: 100vh;
+                background: var(--bg-primary);
+                border-left: 2px solid var(--border);
+                flex-direction: column;
+                padding: 6rem 2rem;
+                gap: 2rem;
+                align-items: flex-start;
+                transition: right 0.3s ease;
+            }
+
+            .nav-links.active { right: 0; }
+
+            .info-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="../PV-Stromfischer.png" alt="Logo">
+                PV-STROMFISCHER
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="../index.html">HOME</a></li>
+                <li><a href="../index.html#features">VORTEILE</a></li>
+                <li><a href="./">ÜBER UNS</a></li>
+                <li><a href="../dashboard.html">DASHBOARD</a></li>
+                <li><a href="../tarife.html">TARIFE</a></li>
+                <li><a href="../ersparnis-rechner.html">RECHNER</a></li>
+                <li><a href="../anmeldung/">ANMELDUNG</a></li>
+                <li><a href="../index.html#contact">KONTAKT</a></li>
+                <li>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Theme Toggle"></button>
+                </li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+        </div>
+    </nav>
+
+    <section class="about-section">
+        <h2>Über uns</h2>
+
+        <div class="about-container">
+            <div class="about-intro">
+                <p>Die PV-Stromfischer sind eine Erneuerbare Energiegemeinschaft (EEG) in Stadl-Paura. Gemeinsam teilen wir lokal erzeugte Solarenergie und gestalten aktiv die Energiewende in unserer Region.</p>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="info-icon">☀️</div>
+                    <h3>Unsere Vision</h3>
+                    <p>Eine nachhaltige Energiezukunft für Stadl-Paura, in der saubere Solarenergie lokal erzeugt und geteilt wird.</p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon">👥</div>
+                    <h3>Gemeinschaft</h3>
+                    <p>Engagierte Mitglieder - Haushalte und PV-Anlagenbetreiber - arbeiten zusammen für eine grüne Zukunft.</p>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-icon">🌱</div>
+                    <h3>Nachhaltigkeit</h3>
+                    <p>100% erneuerbare Energie aus Photovoltaik-Anlagen in unserer Region für eine klimafreundliche Stromversorgung.</p>
+                </div>
+            </div>
+
+            <!-- Mission Section -->
+            <div class="mission-section">
+                <h3>🎯 Unsere Mission</h3>
+                <p>Wir ermöglichen es Bürgerinnen und Bürgern in Stadl-Paura, Teil der Energiewende zu werden. Durch das Teilen von lokal erzeugtem Solarstrom profitieren alle Mitglieder von fairen Preisen und reduzieren gemeinsam den CO₂-Fußabdruck unserer Gemeinde.</p>
+            </div>
+
+            <!-- Statuten Download Section -->
+            <div class="statuten-section">
+                <h3>📄 Unsere Statuten</h3>
+                <p>Die Statuten des Vereins EEG PV-Stromfischer bilden die rechtliche Grundlage unserer Energiegemeinschaft. Hier können Sie die aktuellen Statuten einsehen und herunterladen.</p>
+                <a href="Statuten_aktuell.pdf" class="download-btn" target="_blank">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Statuten herunterladen (PDF)
+                </a>
+            </div>
+
+            <!-- How it works -->
+            <div class="info-box-section">
+                <h3>Wie funktioniert eine EEG?</h3>
+                <div class="info-box">
+                    <p><strong>Energieerzeugung:</strong> Mitglieder mit Photovoltaik-Anlagen speisen überschüssigen Strom in die Gemeinschaft ein und erhalten dafür eine faire Vergütung.</p>
+                    <p><strong>Energieverbrauch:</strong> Alle Mitglieder können den lokal erzeugten Solarstrom zu günstigen Konditionen beziehen und sparen bei Netzentgelten.</p>
+                    <p><strong>Transparente Abrechnung:</strong> Über unser digitales Abrechnungssystem wird die Energie fair verteilt und monatlich abgerechnet.</p>
+                    <p><strong>Gemeinschaft:</strong> Als eingetragener Verein treffen wir demokratisch Entscheidungen und gestalten gemeinsam unsere Energiezukunft.</p>
+                </div>
+            </div>
+
+            <!-- Contact CTA -->
+            <div class="contact-cta">
+                <h3>Interesse geweckt?</h3>
+                <p>Werden Sie Teil der PV-Stromfischer und profitieren Sie von sauberem, regionalem Solarstrom!</p>
+                <a href="../index.html#contact" class="btn">Kontakt aufnehmen</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 PV-Stromfischer | Energiegemeinschaft Stadl-Paura</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', theme);
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
