@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarife & Benefit-Rechner - PV-Stromfischer</title>
+    <link rel="icon" type="image/png" href="PV-Stromfischer.png">
+    <link href="fonts/fonts.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #FF6B35;
+            --accent-dark: #E85A2B;
+            --border: #d0d0d0;
+            --bezug-color: #FF6B35;
+            --einspeisung-color: #27ae60;
+            --mitglied-color: #3498db;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border: #333333;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding-top: 80px;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-bottom: 2px solid var(--border);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .logo img { height: 45px; }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover { color: var(--accent); }
+
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            width: 60px;
+            height: 32px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            left: 2px;
+            top: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle::before { transform: translateX(28px); }
+
+        .mobile-menu-btn {
+            display: none;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .tarife-section {
+            background: var(--bg-primary);
+            padding: 4rem 2rem;
+        }
+
+        .tarife-section h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .tarife-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tarife-intro {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 3rem 2rem;
+            margin: 3rem 0;
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-header h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .pricing-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-card {
+            background: var(--bg-primary);
+            border: 2px solid var(--border);
+            padding: 2.5rem 2rem;
+            position: relative;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent);
+        }
+
+        .pricing-card.bezug::before {
+            background: var(--bezug-color);
+        }
+
+        .pricing-card.einspeisung::before {
+            background: var(--einspeisung-color);
+        }
+
+        .pricing-card.mitgliedsbeitrag::before {
+            background: var(--mitglied-color);
+        }
+
+        .pricing-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .pricing-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .pricing-amount {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .pricing-number {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--accent);
+        }
+
+        .pricing-card.bezug .pricing-number {
+            color: var(--bezug-color);
+        }
+
+        .pricing-card.einspeisung .pricing-number {
+            color: var(--einspeisung-color);
+        }
+
+        .pricing-card.mitgliedsbeitrag .pricing-number {
+            color: var(--mitglied-color);
+        }
+
+        .pricing-unit {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            padding: 0.8rem 0;
+            font-size: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: '✓ ';
+            color: var(--accent);
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .pricing-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .pricing-highlight {
+            background: var(--accent);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .pricing-highlight h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        /* Calculator CTA */
+        .calculator-cta-box {
+            background: var(--einspeisung-color);
+            color: white;
+            padding: 3rem 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .calculator-cta-box h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .calculator-cta-box p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: white;
+            color: var(--einspeisung-color);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background: transparent;
+            color: white;
+        }
+
+        /* Info Grid */
+        .tarife-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .tarif-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .tarif-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: var(--accent);
+            transition: height 0.3s ease;
+        }
+
+        .tarif-card:hover::before {
+            height: 100%;
+        }
+
+        .tarif-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .tarif-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .tarif-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tarif-card a {
+            color: var(--einspeisung-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* How It Works */
+        .tarife-info {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 3rem 2rem;
+            margin: 4rem 0;
+        }
+
+        .tarife-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        .info-box {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .info-box p {
+            padding: 1.5rem;
+            background: var(--bg-primary);
+            border-left: 4px solid var(--accent);
+            line-height: 1.8;
+        }
+
+        .info-box strong {
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Benefit Calculator */
+        .benefit-calculator {
+            margin: 4rem 0;
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .calculator-header h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .calculator-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .calculator-frame {
+            border: 2px solid var(--border);
+            background: var(--bg-secondary);
+            padding: 1rem;
+        }
+
+        .calculator-frame iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+        }
+
+        .calculator-footer {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-top: none;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .external-link {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        footer {
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            body { padding-top: 70px; }
+
+            .mobile-menu-btn { display: block; }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                height: 100vh;
+                background: var(--bg-primary);
+                border-left: 2px solid var(--border);
+                flex-direction: column;
+                padding: 6rem 2rem;
+                gap: 2rem;
+                align-items: flex-start;
+                transition: right 0.3s ease;
+            }
+
+            .nav-links.active { right: 0; }
+
+            .pricing-number { font-size: 3rem; }
+
+            .calculator-frame iframe { height: 600px; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="PV-Stromfischer.png" alt="Logo">
+                PV-STROMFISCHER
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="index.html#features">VORTEILE</a></li>
+                <li><a href="index.html#about">ÜBER UNS</a></li>
+                <li><a href="dashboard.html">DASHBOARD</a></li>
+                <li><a href="tarife.html">TARIFE</a></li>
+                <li><a href="anmeldung/">ANMELDUNG</a></li>
+                <li><a href="index.html#contact">KONTAKT</a></li>
+                <li>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Theme Toggle"></button>
+                </li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+        </div>
+    </nav>
+
+    <section id="tarife" class="tarife-section">
+        <h2>Tarife & Benefit-Rechner</h2>
+
+        <div class="tarife-container">
+            <div class="tarife-intro">
+                <p>Transparente und faire Preise für alle Mitglieder der PV-Stromfischer! Profitieren Sie von attraktiven Konditionen beim Strombezug und der Einspeisung.</p>
+            </div>
+
+            <!-- Pricing Section -->
+            <div class="pricing-section">
+                <div class="pricing-header">
+                    <h3>💰 Unsere Tarife</h3>
+                    <p>Faire Preise für Erzeuger und Verbraucher</p>
+                </div>
+
+                <div class="pricing-cards">
+                    <!-- Bezugstarif Card -->
+                    <div class="pricing-card bezug">
+                        <div class="pricing-icon">⚡</div>
+                        <h3 class="pricing-title">Bezugstarif</h3>
+                        <div class="pricing-amount">
+                            <div class="pricing-number" id="bezugstarif-wert">11</div>
+                            <span class="pricing-unit">Cent / kWh</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Regionaler Ökostrom</li>
+                            <li>Netzentgeltersparnis</li>
+                            <li>Transparente Abrechnung</li>
+                            <li>Faire Konditionen</li>
+                        </ul>
+                        <div class="pricing-description">
+                            Als Verbraucher beziehen Sie sauberen Solarstrom aus der Region zu einem fairen Preis.
+                        </div>
+                    </div>
+
+                    <!-- Einspeisungstarif Card -->
+                    <div class="pricing-card einspeisung">
+                        <div class="pricing-icon">☀️</div>
+                        <h3 class="pricing-title">Einspeisungstarif</h3>
+                        <div class="pricing-amount">
+                            <div class="pricing-number" id="einspeisungstarif-wert">7</div>
+                            <span class="pricing-unit">Cent / kWh</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Attraktive Vergütung</li>
+                            <li>Direkte Vermarktung</li>
+                            <li>Regionale Wertschöpfung</li>
+                            <li>Planbare Einnahmen</li>
+                        </ul>
+                        <div class="pricing-description">
+                            Als Erzeuger erhalten Sie eine faire Vergütung für Ihren eingespeisten Solarstrom.
+                        </div>
+                    </div>
+
+                    <!-- Mitgliedsbeitrag Card -->
+                    <div class="pricing-card mitgliedsbeitrag">
+                        <div class="pricing-icon">👥</div>
+                        <h3 class="pricing-title">Mitgliedsbeitrag</h3>
+                        <div class="pricing-amount">
+                            <div class="pricing-number" id="mitgliedsbeitrag-wert">10</div>
+                            <span class="pricing-unit">€ / Jahr</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Einmalig pro Jahr</li>
+                            <li>Deckung Verwaltungskosten</li>
+                            <li>Vereinsmitgliedschaft</li>
+                            <li>Faire Beteiligung</li>
+                        </ul>
+                        <div class="pricing-description">
+                            Der jährliche Mitgliedsbeitrag deckt die Verwaltungskosten der Energiegemeinschaft.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pricing-highlight">
+                    <h4>🌱 Gemeinsam stark durch lokale Energie</h4>
+                    <p>
+                        Durch die direkte Vermarktung innerhalb der Energiegemeinschaft profitieren alle Mitglieder von reduzierten Netzentgelten und einer höheren Wertschöpfung in der Region. Die Preise werden vom Verein EEG PV-Stromfischer festgelegt.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Ersparnis-Rechner Section -->
+            <div class="calculator-cta-box">
+                <h3>💰 Berechnen Sie Ihre Ersparnis!</h3>
+                <p>
+                    Mit unserem Ersparnis-Rechner können Sie schnell und einfach berechnen, wie viel Sie durch die Mitgliedschaft in der Energiegemeinschaft bei den Netzkosten und Abgaben sparen.
+                </p>
+                <a href="ersparnis-rechner.html" class="cta-button">
+                    Jetzt Ersparnis berechnen →
+                </a>
+            </div>
+
+            <div class="tarife-intro" style="margin-top: 4rem;">
+                <p>Für eine detaillierte Benefit-Analyse nutzen Sie den professionellen Rechner des Energieinstituts Vorarlberg, um alle Vorteile Ihrer Teilnahme an unserer Energiegemeinschaft zu ermitteln.</p>
+            </div>
+
+            <div class="tarife-grid">
+                <div class="tarif-card">
+                    <div class="tarif-icon">💰</div>
+                    <h3>Ersparnis-Rechner</h3>
+                    <p>Berechnen Sie schnell Ihre jährliche Ersparnis bei Netzkosten und Abgaben</p>
+                    <p style="margin-top: 1rem;">
+                        <a href="ersparnis-rechner.html">
+                            Jetzt berechnen →
+                        </a>
+                    </p>
+                </div>
+                <div class="tarif-card">
+                    <div class="tarif-icon">📊</div>
+                    <h3>Eigenverbrauch optimieren</h3>
+                    <p>Maximieren Sie Ihren Eigenverbrauch und profitieren Sie von Netzentgeltersparnis</p>
+                </div>
+                <div class="tarif-card">
+                    <div class="tarif-icon">💡</div>
+                    <h3>Transparente Abrechnung</h3>
+                    <p>Faire und nachvollziehbare Verteilung der Energie innerhalb der Gemeinschaft</p>
+                </div>
+            </div>
+
+            <div class="benefit-calculator">
+                <div class="calculator-header">
+                    <h3>🧮 Benefit-Rechner für Energiegemeinschaften</h3>
+                    <p>Nutzen Sie das professionelle Tool des Energieinstituts Vorarlberg, um die Vorteile Ihrer Teilnahme zu berechnen:</p>
+                </div>
+
+                <div class="calculator-frame">
+                    <iframe
+                        src="https://www.energieinstitut.at/tools/benefit/"
+                        width="100%"
+                        height="800"
+                        frameborder="0"
+                        title="Benefit-Rechner für Energiegemeinschaften"
+                        allow="fullscreen"
+                        loading="lazy">
+                    </iframe>
+                </div>
+
+                <div class="calculator-footer">
+                    <p>
+                        <strong>Tipp:</strong> Der Rechner unterstützt sowohl Erneuerbare Energiegemeinschaften (EEG) als auch Gemeinschaftliche Erzeugungsanlagen (GEA).
+                        <br>
+                        <a href="https://www.energieinstitut.at/tools/benefit/" target="_blank" rel="noopener noreferrer" class="external-link">
+                            Rechner in neuem Fenster öffnen ↗
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="tarife-info">
+                <h3>Wie funktioniert die Tarifgestaltung?</h3>
+                <div class="info-box">
+                    <p><strong>Für Erzeuger:</strong> Sie erhalten eine faire Vergütung für Ihren eingespeisten Solarstrom, die über den üblichen Einspeisevergütungen liegt.</p>
+                    <p><strong>Für Verbraucher:</strong> Sie beziehen regionalen Ökostrom zu günstigen Konditionen und sparen bei den Netzentgelten.</p>
+                    <p><strong>Gemeinsam profitieren:</strong> Durch lokale Energieteilung entfallen viele Netzkosten, wovon alle Mitglieder profitieren.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 PV-Stromfischer | Energiegemeinschaft Stadl-Paura</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', theme);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarife & Benefit-Rechner - PV-Stromfischer Stadl-Paura</title>
+    <link rel="icon" type="image/png" href="PV-Stromfischer.png">
+    <link rel="shortcut icon" type="image/png" href="PV-Stromfischer.png">
+    <link rel="apple-touch-icon" href="PV-Stromfischer.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin-left: 220px;
+            padding-top: 50px;
+        }
+
+        .construction-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(
+                135deg,
+                #f59e0b 0%,
+                #d97706 25%,
+                #f59e0b 50%,
+                #d97706 75%,
+                #f59e0b 100%
+            );
+            background-size: 200% 100%;
+            color: white;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.05rem;
+            z-index: 10000;
+            box-shadow:
+                0 4px 15px rgba(245, 158, 11, 0.4),
+                0 2px 5px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            animation: slideDown 0.5s ease-out, gradientShift 3s ease-in-out infinite;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+            border-bottom: 3px solid rgba(217, 119, 6, 0.6);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .construction-banner::before {
+            content: '🚧';
+            margin-right: 0.75rem;
+            font-size: 1.3rem;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .construction-banner::after {
+            content: '🚧';
+            margin-left: 0.75rem;
+            font-size: 1.3rem;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+
+        header {
+            position: fixed;
+            left: 0;
+            top: 50px;
+            width: 220px;
+            height: calc(100vh - 50px);
+            background: linear-gradient(180deg, #3d5a5c 0%, #4a6b6d 100%);
+            color: white;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1rem;
+            height: 100%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo img {
+            height: 80px;
+            width: auto;
+            background: white;
+            padding: 8px 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .logo img:hover {
+            box-shadow: 0 6px 20px rgba(242, 101, 34, 0.4);
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-links li {
+            width: 100%;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0.75rem;
+            min-width: 44px;
+            min-height: 44px;
+            touch-action: manipulation;
+        }
+
+        .hero {
+            position: relative;
+            background:
+                linear-gradient(135deg, rgba(61, 90, 92, 0.92) 0%, rgba(74, 107, 109, 0.88) 50%, rgba(242, 101, 34, 0.85) 100%),
+                url('Stadl-Paura.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            padding: 8rem 2rem;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(242, 101, 34, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(61, 90, 92, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 3rem;
+            opacity: 0.15;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-icon:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-icon:nth-child(2) {
+            top: 60%;
+            left: 85%;
+            animation-delay: 2s;
+        }
+
+        .floating-icon:nth-child(3) {
+            top: 30%;
+            right: 15%;
+            animation-delay: 4s;
+        }
+
+        .floating-icon:nth-child(4) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease;
+            text-shadow: 2px 4px 8px rgba(0,0,0,0.3);
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 1.4rem;
+            margin-bottom: 2rem;
+            opacity: 0.98;
+            animation: fadeInUp 1s ease 0.2s backwards;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+            font-weight: 300;
+        }
+
+        .hero-subtitle {
+            font-size: 1.15rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+            animation: fadeInUp 1s ease 0.4s backwards;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z' fill='%23ffffff'/%3E%3C/svg%3E");
+            background-size: cover;
+            z-index: 1;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #f26522;
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 1s ease 0.6s backwards;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(242, 101, 34, 0.4);
+            background: #d95a1f;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #3d3027;
+            text-align: center;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+        }
+
+        .about-stats {
+            background: linear-gradient(135deg, #3d5a5c 0%, #4a6b6d 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            margin: 1.5rem 0;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .features {
+            background: #fef7f0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #3d5a5c;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .how-it-works {
+            background: white;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step {
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f26522 0%, #d95a1f 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+
+        .dashboard-section {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            padding: 4rem 2rem;
+        }
+
+        .dashboard-section h2 {
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .dashboard-card h3 {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .dashboard-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .dashboard-label {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .dashboard-status {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .chart-container {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chart-container h3 {
+            color: #fff;
+            margin-bottom: 2rem;
+            font-size: 1.4rem;
+        }
+
+        .dashboard-footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+        }
+
+        .status-online {
+            color: #10b981;
+        }
+
+        .status-offline {
+            color: #ef4444;
+        }
+
+        .tarife-section {
+            background: #f8f9fa;
+            padding: 4rem 2rem;
+        }
+
+        .tarife-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tarife-intro {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            color: #3d3027;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tarife-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .tarif-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .tarif-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .tarif-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .tarif-card h3 {
+            color: #3d5a5c;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .tarif-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .pricing-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 25px;
+            padding: 3rem 2rem;
+            margin: 3rem 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-header h3 {
+            font-size: 2.2rem;
+            color: #3d5a5c;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            border: 3px solid transparent;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        }
+
+        .pricing-card.bezug {
+            border-color: #f26522;
+        }
+
+        .pricing-card.bezug::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #f26522 0%, #ff8c42 100%);
+        }
+
+        .pricing-card.einspeisung {
+            border-color: #27ae60;
+        }
+
+        .pricing-card.einspeisung::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #27ae60 0%, #2ecc71 100%);
+        }
+
+        .pricing-card.mitgliedsbeitrag {
+            border-color: #3498db;
+        }
+
+        .pricing-card.mitgliedsbeitrag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #3498db 0%, #5dade2 100%);
+        }
+
+        .pricing-card.mitgliedsbeitrag .pricing-number {
+            background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .pricing-title {
+            font-size: 1.8rem;
+            color: #3d5a5c;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .pricing-amount {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .pricing-number {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(135deg, #3d5a5c 0%, #f26522 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-card.einspeisung .pricing-number {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-unit {
+            font-size: 1.3rem;
+            color: #666;
+            font-weight: 600;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            padding: 0.8rem 0;
+            color: #555;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .pricing-description {
+            text-align: center;
+            color: #777;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px dashed #ddd;
+        }
+
+        .pricing-highlight {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .pricing-highlight h4 {
+            color: #e65100;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-highlight p {
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .benefit-calculator {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin: 3rem 0;
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .calculator-header h3 {
+            color: #3d5a5c;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .calculator-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .calculator-frame {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            background: #fff;
+            min-height: 800px;
+        }
+
+        .calculator-frame iframe {
+            display: block;
+        }
+
+        .calculator-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .calculator-footer p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .external-link {
+            color: #3d5a5c;
+            font-weight: bold;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .external-link:hover {
+            color: #f26522;
+            text-decoration: underline;
+        }
+
+        .tarife-info {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .tarife-info h3 {
+            color: #3d5a5c;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #3d5a5c 0%, #4a6b6d 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .info-box p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .membership {
+            background: linear-gradient(135deg, #3d5a5c 0%, #4a6b6d 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .membership h2 {
+            color: white;
+        }
+
+        .membership-content {
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .contact {
+            background: #fef7f0;
+            text-align: center;
+        }
+
+        .contact-info {
+            font-size: 1.2rem;
+            margin-top: 2rem;
+        }
+
+        .contact-email {
+            display: inline-block;
+            background: #f26522;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+
+        .contact-email:hover {
+            background: #d95a1f;
+        }
+
+        .contact-form-container {
+            max-width: 600px;
+            margin: 3rem auto 0;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #3d3027;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3d5a5c;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin-top: 0.2rem;
+            cursor: pointer;
+        }
+
+        .contact-submit {
+            width: 100%;
+            background: #f26522;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .contact-submit:hover {
+            background: #d95a1f;
+            transform: translateY(-2px);
+        }
+
+        .contact-submit:active {
+            transform: translateY(0);
+        }
+
+        .form-message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .form-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .form-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .contact-email-link {
+            color: #3d5a5c;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .contact-email-link:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            background: #3d3027;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: opacity 0.3s;
+        }
+
+        footer a:hover {
+            opacity: 0.8;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .modal-content h2 {
+            color: #3d3027;
+            margin-bottom: 2rem;
+        }
+
+        .modal-content h3 {
+            color: #3d5a5c;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                margin-left: 0;
+                margin-top: 120px;
+                padding-top: 0;
+            }
+
+            .construction-banner {
+                font-size: 0.9rem;
+                padding: 0.6rem 0.5rem;
+            }
+
+            header {
+                position: fixed;
+                width: 100%;
+                height: auto;
+                top: 50px;
+                left: 0;
+            }
+
+            nav {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
+                height: auto;
+            }
+
+            .logo {
+                margin-bottom: 0;
+            }
+
+            .logo img {
+                height: 50px;
+            }
+
+            .mobile-menu-btn {
+                display: block !important;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 2rem;
+                cursor: pointer;
+                padding: 0.75rem;
+                min-width: 44px;
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: #3d5a5c;
+                padding: 0;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+                animation: slideDown 0.3s ease-out;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .nav-links a {
+                padding: 1.25rem 1.5rem;
+                min-height: 48px;
+                font-size: 1.1rem;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+
+            .nav-links a:hover {
+                background: rgba(255, 255, 255, 0.15);
+                transform: none;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .pricing-section {
+                padding: 2rem 1rem;
+                margin: 2rem 0;
+            }
+
+            .pricing-header h3 {
+                font-size: 1.8rem;
+            }
+
+            .pricing-header p {
+                font-size: 1.05rem;
+            }
+
+            .pricing-cards {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .pricing-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .pricing-number {
+                font-size: 3.5rem;
+            }
+
+            .pricing-title {
+                font-size: 1.5rem;
+            }
+
+            .pricing-icon {
+                font-size: 3rem;
+            }
+
+            .pricing-features li {
+                font-size: 1rem;
+            }
+
+            .pricing-highlight {
+                padding: 1.5rem;
+            }
+
+            .pricing-highlight h4 {
+                font-size: 1.3rem;
+            }
+
+            .pricing-highlight p {
+                font-size: 1rem;
+            }
+
+            .tarife-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .benefit-calculator {
+                padding: 1rem;
+            }
+
+            .calculator-frame {
+                min-height: 600px;
+            }
+
+            .calculator-frame iframe {
+                height: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="construction-banner">
+        Under Construction - Diese Seite befindet sich noch im Aufbau
+    </div>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="PV-Stromfischer.png" alt="PV-Stromfischer Logo">
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" onclick="closeMenu()">Home</a></li>
+                <li><a href="dashboard.html" onclick="closeMenu()">Live Dashboard</a></li>
+                <li><a href="tarife.html" onclick="closeMenu()">Tarife & Rechner</a></li>
+                <li><a href="ersparnis-rechner.html" onclick="closeMenu()">Ersparnis-Rechner</a></li>
+                <li><a href="anmeldung/" onclick="closeMenu()">Anmeldung</a></li>
+                <li><a href="index.html#contact" onclick="closeMenu()">Kontakt</a></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+        </nav>
+    </header>
+
+    <section id="tarife" class="tarife-section">
+        <h2>Tarife & Benefit-Rechner</h2>
+
+        <div class="tarife-container">
+            <div class="tarife-intro">
+                <p>Transparente und faire Preise für alle Mitglieder der PV-Stromfischer! Profitieren Sie von attraktiven Konditionen beim Strombezug und der Einspeisung.</p>
+            </div>
+
+            <!-- Pricing Section -->
+            <div class="pricing-section">
+                <div class="pricing-header">
+                    <h3>💰 Unsere Tarife</h3>
+                    <p>Faire Preise für Erzeuger und Verbraucher</p>
+                </div>
+
+                <div class="pricing-cards">
+                    <!-- Bezugstarif Card -->
+                    <div class="pricing-card bezug">
+                        <div class="pricing-icon">⚡</div>
+                        <h3 class="pricing-title">Bezugstarif</h3>
+                        <div class="pricing-amount">
+                            <div class="pricing-number" id="bezugstarif-wert">11</div>
+                            <span class="pricing-unit">Cent / kWh</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Regionaler Ökostrom</li>
+                            <li>Netzentgeltersparnis</li>
+                            <li>Transparente Abrechnung</li>
+                            <li>Faire Konditionen</li>
+                        </ul>
+                        <div class="pricing-description">
+                            Als Verbraucher beziehen Sie sauberen Solarstrom aus der Region zu einem fairen Preis.
+                        </div>
+                    </div>
+
+                    <!-- Einspeisungstarif Card -->
+                    <div class="pricing-card einspeisung">
+                        <div class="pricing-icon">☀️</div>
+                        <h3 class="pricing-title">Einspeisungstarif</h3>
+                        <div class="pricing-amount">
+                            <div class="pricing-number" id="einspeisungstarif-wert">7</div>
+                            <span class="pricing-unit">Cent / kWh</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Attraktive Vergütung</li>
+                            <li>Direkte Vermarktung</li>
+                            <li>Regionale Wertschöpfung</li>
+                            <li>Planbare Einnahmen</li>
+                        </ul>
+                        <div class="pricing-description">
+                            Als Erzeuger erhalten Sie eine faire Vergütung für Ihren eingespeisten Solarstrom.
+                        </div>
+                    </div>
+
+                    <!-- Mitgliedsbeitrag Card -->
+                    <div class="pricing-card mitgliedsbeitrag">
+                        <div class="pricing-icon">👥</div>
+                        <h3 class="pricing-title">Mitgliedsbeitrag</h3>
+                        <div class="pricing-amount">
+                            <div class="pricing-number" id="mitgliedsbeitrag-wert">10</div>
+                            <span class="pricing-unit">€ / Jahr</span>
+                        </div>
+                        <ul class="pricing-features">
+                            <li>Einmalig pro Jahr</li>
+                            <li>Deckung Verwaltungskosten</li>
+                            <li>Vereinsmitgliedschaft</li>
+                            <li>Faire Beteiligung</li>
+                        </ul>
+                        <div class="pricing-description">
+                            Der jährliche Mitgliedsbeitrag deckt die Verwaltungskosten der Energiegemeinschaft.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pricing-highlight">
+                    <h4>🌱 Gemeinsam stark durch lokale Energie</h4>
+                    <p>
+                        Durch die direkte Vermarktung innerhalb der Energiegemeinschaft profitieren alle Mitglieder von reduzierten Netzentgelten und einer höheren Wertschöpfung in der Region. Die Preise werden vom Verein EEG PV-Stromfischer festgelegt.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Ersparnis-Rechner Section -->
+            <div style="background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); border-radius: 20px; padding: 3rem 2rem; margin: 3rem 0; text-align: center; color: white;">
+                <h3 style="font-size: 2rem; margin-bottom: 1rem; color: white;">💰 Berechnen Sie Ihre Ersparnis!</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.95;">
+                    Mit unserem Ersparnis-Rechner können Sie schnell und einfach berechnen, wie viel Sie durch die Mitgliedschaft in der Energiegemeinschaft bei den Netzkosten und Abgaben sparen.
+                </p>
+                <a href="ersparnis-rechner.html" class="cta-button" style="background: white; color: #27ae60; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
+                    Jetzt Ersparnis berechnen →
+                </a>
+            </div>
+
+            <div class="tarife-intro" style="margin-top: 4rem;">
+                <p>Für eine detaillierte Benefit-Analyse nutzen Sie den professionellen Rechner des Energieinstituts Vorarlberg, um alle Vorteile Ihrer Teilnahme an unserer Energiegemeinschaft zu ermitteln.</p>
+            </div>
+
+            <div class="tarife-grid">
+                <div class="tarif-card">
+                    <div class="tarif-icon">💰</div>
+                    <h3>Ersparnis-Rechner</h3>
+                    <p>Berechnen Sie schnell Ihre jährliche Ersparnis bei Netzkosten und Abgaben</p>
+                    <p style="margin-top: 1rem;">
+                        <a href="ersparnis-rechner.html" style="color: #27ae60; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                            Jetzt berechnen →
+                        </a>
+                    </p>
+                </div>
+                <div class="tarif-card">
+                    <div class="tarif-icon">📊</div>
+                    <h3>Eigenverbrauch optimieren</h3>
+                    <p>Maximieren Sie Ihren Eigenverbrauch und profitieren Sie von Netzentgeltersparnis</p>
+                </div>
+                <div class="tarif-card">
+                    <div class="tarif-icon">💡</div>
+                    <h3>Transparente Abrechnung</h3>
+                    <p>Faire und nachvollziehbare Verteilung der Energie innerhalb der Gemeinschaft</p>
+                </div>
+            </div>
+
+            <div class="benefit-calculator">
+                <div class="calculator-header">
+                    <h3>🧮 Benefit-Rechner für Energiegemeinschaften</h3>
+                    <p>Nutzen Sie das professionelle Tool des Energieinstituts Vorarlberg, um die Vorteile Ihrer Teilnahme zu berechnen:</p>
+                </div>
+
+                <div class="calculator-frame">
+                    <iframe
+                        src="https://www.energieinstitut.at/tools/benefit/"
+                        width="100%"
+                        height="800"
+                        frameborder="0"
+                        title="Benefit-Rechner für Energiegemeinschaften"
+                        allow="fullscreen"
+                        loading="lazy">
+                    </iframe>
+                </div>
+
+                <div class="calculator-footer">
+                    <p>
+                        <strong>Tipp:</strong> Der Rechner unterstützt sowohl Erneuerbare Energiegemeinschaften (EEG) als auch Gemeinschaftliche Erzeugungsanlagen (GEA).
+                        <br>
+                        <a href="https://www.energieinstitut.at/tools/benefit/" target="_blank" rel="noopener noreferrer" class="external-link">
+                            Rechner in neuem Fenster öffnen ↗
+                        </a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="tarife-info">
+                <h3>Wie funktioniert die Tarifgestaltung?</h3>
+                <div class="info-box">
+                    <p><strong>Für Erzeuger:</strong> Sie erhalten eine faire Vergütung für Ihren eingespeisten Solarstrom, die über den üblichen Einspeisevergütungen liegt.</p>
+                    <p><strong>Für Verbraucher:</strong> Sie beziehen regionalen Ökostrom zu günstigen Konditionen und sparen bei den Netzentgelten.</p>
+                    <p><strong>Gemeinsam profitieren:</strong> Durch lokale Energieteilung entfallen viele Netzkosten, wovon alle Mitglieder profitieren.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 PV-Stromfischer | Energiegemeinschaft Stadl-Paura</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            <a href="#" onclick="showModal('imprintModal'); return false;">Impressum</a> | 
+            <a href="#" onclick="showModal('privacyModal'); return false;">Datenschutz</a>
+        </p>
+    </footer>
+
+    <!-- Impressum Modal -->
+    <div id="imprintModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('imprintModal')">×</button>
+            <h2>Impressum</h2>
+            <h3>Informationspflicht laut §5 E-Commerce Gesetz</h3>
+            <p><strong>Verein PV-Stromfischer</strong></p>
+            <p>Schwanenstädter Straße 40<br>
+            4651 Stadl-Hausruck<br>
+            Österreich</p>
+
+            <p><strong>Organschaftliche Vertreter:</strong><br>
+            Manuel Benning<br>
+            Christoph Wind</p>
+
+            <p><strong>ZVR-Zahl:</strong> 1150769458</p>
+
+            <p><strong>E-Mail:</strong> <a href="mailto:Info@pv-stromfischer.at" style="color: #3d5a5c;">Info@pv-stromfischer.at</a></p>
+
+            <h3>Haftungsausschluss</h3>
+            <p>Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.</p>
+        </div>
+    </div>
+
+    <!-- Datenschutz Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+            <h2>Datenschutzerklärung</h2>
+            
+            <h3>Datenschutz</h3>
+            <p>Wir haben diese Datenschutzerklärung verfasst, um Ihnen gemäß der Vorgaben der Datenschutz-Grundverordnung (EU) 2016/679 zu erklären, welche Informationen wir sammeln und wie wir Daten verwenden.</p>
+            
+            <h3>Kontaktdaten</h3>
+            <p>Wenn Sie uns per E-Mail kontaktieren, werden Ihre angegebenen Daten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.</p>
+            
+            <h3>Live Dashboard</h3>
+            <p>Das Live Dashboard zeigt öffentlich zugängliche Daten zur aktuellen Energieproduktion unserer Gemeinschaft. Es werden keine personenbezogenen Daten einzelner Mitglieder angezeigt oder gespeichert.</p>
+            
+            <h3>Ihre Rechte</h3>
+            <p>Ihnen stehen grundsätzlich die Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerruf und Widerspruch zu. Wenn Sie glauben, dass die Verarbeitung Ihrer Daten gegen das Datenschutzrecht verstößt, steht Ihnen das Beschwerderecht bei der Aufsichtsbehörde zu.</p>
+            
+        </div>
+    </div>
+
+    <!-- Zentrale Tarif-Konfiguration -->
+    <script src="tarife-config.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Tarife aus zentraler Konfiguration laden
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('bezugstarif-wert').textContent = PV_STROMFISCHER_TARIFE.bezugstarif;
+            document.getElementById('einspeisungstarif-wert').textContent = PV_STROMFISCHER_TARIFE.einspeisungstarif;
+            document.getElementById('mitgliedsbeitrag-wert').textContent = PV_STROMFISCHER_TARIFE.mitgliedsbeitrag;
+        });
+
+        // Navigation
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        function closeMenu() {
+            document.getElementById('navLinks').classList.remove('active');
+        }
+
+        // Modal Functions
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Dashboard mit InfluxDB Proxy
+        const PROXY_URL = './influx-proxy.php';
+        
+        let todaySurplusTotal = 0;
+        let todayTotalEnergy = 0;
+
+        async function fetchCurrentData() {
+            try {
+                const response = await fetch(`${PROXY_URL}?action=current`);
+                const data = await response.json();
+                
+                if (data && data.results && data.results[0].series) {
+                    const value = data.results[0].series[0].values[0][1];
+                    updateDisplay(value);
+                    document.getElementById('connectionStatus').innerHTML = '● Verbunden';
+                    document.getElementById('connectionStatus').className = 'status-online';
+                } else {
+                    throw new Error('Keine Daten');
+                }
+            } catch (error) {
+                console.error('Fehler beim Abrufen der Daten:', error);
+                document.getElementById('connectionStatus').innerHTML = '● Verbindungsfehler';
+                document.getElementById('connectionStatus').className = 'status-offline';
+            }
+            
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = 
+                `Letztes Update: ${now.toLocaleTimeString('de-DE')}`;
+        }
+
+        async function fetchDailyStats() {
+            try {
+                // Heute Eingespeist (negative values)
+                const feedInResponse = await fetch(`${PROXY_URL}?action=feedin`);
+                const feedInData = await feedInResponse.json();
+                if (feedInData && feedInData.results && feedInData.results[0].series) {
+                    const feedInKwh = Math.abs(feedInData.results[0].series[0].values[0][1]);
+                    document.getElementById('todayFeedIn').textContent = feedInKwh.toFixed(2);
+                }
+
+                // Heute Bezogen (positive values)
+                const consumedResponse = await fetch(`${PROXY_URL}?action=consumed`);
+                const consumedData = await consumedResponse.json();
+                if (consumedData && consumedData.results && consumedData.results[0].series) {
+                    const consumedKwh = Math.abs(consumedData.results[0].series[0].values[0][1]);
+                    document.getElementById('todayConsumed').textContent = consumedKwh.toFixed(2);
+                }
+            } catch (error) {
+                console.error('Fehler beim Abrufen der Tagesstatistiken:', error);
+            }
+        }
+
+        function updateDisplay(watts) {
+            const kw = (watts / 1000).toFixed(1);
+            const powerElement = document.getElementById('currentPower');
+            const statusElement = document.getElementById('powerStatus');
+            
+            if (watts < 0) {
+                // Einspeisung (negativ)
+                powerElement.style.color = '#10b981';
+                powerElement.textContent = Math.abs(kw);
+                statusElement.textContent = '⬆️ Einspeisung ins Netz';
+                statusElement.style.color = '#10b981';
+            } else {
+                // Bezug (positiv)
+                powerElement.style.color = '#f59e0b';
+                powerElement.textContent = kw;
+                statusElement.textContent = '⬇️ Bezug aus dem Netz';
+                statusElement.style.color = '#f59e0b';
+            }
+        }
+
+        // Contact Form Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchCurrentData();
+            fetchDailyStats();
+            setInterval(fetchCurrentData, 5000);
+            setInterval(fetchDailyStats, 60000); // Update Tagesstatistik jede Minute
+
+            // Handle contact form submission
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    const messageDiv = document.getElementById('formMessage');
+
+                    // Disable submit button
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Wird gesendet...';
+
+                    try {
+                        const response = await fetch('kontakt-senden.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            messageDiv.className = 'form-message success';
+                            messageDiv.textContent = result.message;
+                            contactForm.reset();
+                        } else {
+                            messageDiv.className = 'form-message error';
+                            messageDiv.textContent = result.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+                        }
+                    } catch (error) {
+                        messageDiv.className = 'form-message error';
+                        messageDiv.textContent = 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+                    } finally {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Nachricht senden';
+
+                        // Scroll to message
+                        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

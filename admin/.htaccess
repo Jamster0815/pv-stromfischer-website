@@ -1,0 +1,7 @@
+# Admin-Panel nur für internes Netzwerk
+Order Deny,Allow
+Deny from all
+
+# Nur 10.0.0.0/24 Netzwerk erlauben
+Allow from 10.0.0.0/24       # Internes Netzwerk 10.0.0.1 - 10.0.0.254
+Allow from 127.0.0.1         # Localhost

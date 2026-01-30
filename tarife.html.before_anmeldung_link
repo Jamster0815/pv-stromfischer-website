@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarife & Rechner - PV-Stromfischer</title>
+    <link rel="icon" type="image/png" href="PV-Stromfischer.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #FF6B35;
+            --accent-dark: #E85A2B;
+            --border: #d0d0d0;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border: #333333;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-bottom: 2px solid var(--border);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .logo img { height: 45px; }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links a:hover { color: var(--accent); }
+
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            width: 60px;
+            height: 32px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            left: 2px;
+            top: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle::before { transform: translateX(28px); }
+
+        main {
+            margin-top: 80px;
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 4rem;
+        }
+
+        .tarife-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .tarif-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 3rem 2rem;
+            position: relative;
+        }
+
+        .tarif-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: var(--accent);
+            transition: height 0.3s ease;
+        }
+
+        .tarif-card:hover::before { height: 100%; }
+
+        .tarif-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tarif-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .tarif-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .calculator-cta {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 4rem 3rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .calculator-cta h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .calculator-cta p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid var(--accent);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--accent-dark);
+            border-color: var(--accent-dark);
+        }
+
+        footer {
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn { display: block; }
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                height: 100vh;
+                background: var(--bg-primary);
+                border-left: 2px solid var(--border);
+                flex-direction: column;
+                padding: 6rem 2rem;
+                gap: 2rem;
+                align-items: flex-start;
+            }
+            .nav-links.active { right: 0; }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="PV-Stromfischer.png" alt="Logo">
+                PV-STROMFISCHER
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="dashboard.html">DASHBOARD</a></li>
+                <li><a href="tarife.html">TARIFE</a></li>
+                <li><a href="index.html#contact">KONTAKT</a></li>
+                <li><button class="theme-toggle" onclick="toggleTheme()"></button></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+        </div>
+    </nav>
+
+    <main>
+        <h1 class="page-title">TARIFE & RECHNER</h1>
+        <p class="page-subtitle">Transparente Preise für saubere Energie</p>
+
+        <div class="tarife-grid">
+            <div class="tarif-card">
+                <div class="tarif-icon">⚡</div>
+                <h3>LOKALER STROM</h3>
+                <p>Genießen Sie Solarenergie aus Ihrer Region zu fairen Preisen. Keine versteckten Kosten, nur transparente Abrechnung.</p>
+            </div>
+
+            <div class="tarif-card">
+                <div class="tarif-icon">💰</div>
+                <h3>KOSTENERSPARNIS</h3>
+                <p>Bis zu 30% günstiger als herkömmliche Stromtarife durch lokale Produktion und vermiedene Netzgebühren.</p>
+            </div>
+
+            <div class="tarif-card">
+                <div class="tarif-icon">🌱</div>
+                <h3>100% ERNEUERBAR</h3>
+                <p>Ausschließlich saubere Energie aus Photovoltaik-Anlagen in Stadl-Paura. Gut für die Umwelt, gut für Ihr Gewissen.</p>
+            </div>
+        </div>
+
+        <div class="calculator-cta">
+            <h2>📊 ERSPARNIS-RECHNER</h2>
+            <p>Berechnen Sie Ihre individuelle Ersparnis durch die Mitgliedschaft in der Energiegemeinschaft.</p>
+            <a href="ersparnis-rechner.html" class="btn">ZUM RECHNER</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 PV-Stromfischer | Energiegemeinschaft Stadl-Paura</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', theme);
+        });
+    </script>
+</body>
+</html>

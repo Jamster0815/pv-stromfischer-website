@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .test-section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .ok { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        button { padding: 15px 30px; font-size: 18px; margin: 10px; cursor: pointer; }
+        .viewport-info { background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 4px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Navigation Diagnostic Test</h1>
+    
+    <div class="viewport-info">
+        <strong>Current Viewport Width:</strong> <span id="viewportWidth"></span>px<br>
+        <strong>Device Type:</strong> <span id="deviceType"></span><br>
+        <strong>Navigation Should Show:</strong> <span id="navType"></span>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 1: Button Click</h2>
+        <button onclick="testClick()">Click Me - Test JavaScript</button>
+        <div id="clickResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Toggle Function</h2>
+        <button onclick="testToggle()">Test Toggle Menu</button>
+        <div id="toggleResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Quick Links</h2>
+        <a href="index.html">← Back to Homepage</a> | 
+        <a href="dashboard.html">Dashboard</a> | 
+        <a href="tarife.html">Tarife</a>
+    </div>
+
+    <script>
+        function updateViewport() {
+            const width = window.innerWidth;
+            document.getElementById('viewportWidth').textContent = width;
+            
+            if (width <= 768) {
+                document.getElementById('deviceType').textContent = 'Mobile/Tablet';
+                document.getElementById('navType').textContent = 'Top bar with hamburger menu (☰)';
+            } else {
+                document.getElementById('deviceType').textContent = 'Desktop';
+                document.getElementById('navType').textContent = 'Left sidebar navigation';
+            }
+        }
+
+        function testClick() {
+            document.getElementById('clickResult').innerHTML = '<div class="status ok">✓ JavaScript is working! Click events are functional.</div>';
+        }
+
+        function testToggle() {
+            const result = document.getElementById('toggleResult');
+            if (typeof toggleMenu === 'function') {
+                result.innerHTML = '<div class="status ok">✓ toggleMenu() function exists</div>';
+            } else {
+                result.innerHTML = '<div class="status error">✗ toggleMenu() function NOT found</div>';
+            }
+        }
+
+        updateViewport();
+        window.addEventListener('resize', updateViewport);
+    </script>
+</body>
+</html>

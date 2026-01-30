@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ersparnis-Rechner - PV-Stromfischer Stadl-Paura</title>
+    <link rel="icon" type="image/png" href="PV-Stromfischer.png">
+    <link rel="shortcut icon" type="image/png" href="PV-Stromfischer.png">
+    <link rel="apple-touch-icon" href="PV-Stromfischer.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin-left: 220px;
+            padding-top: 50px;
+        }
+
+        .construction-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(
+                135deg,
+                #f59e0b 0%,
+                #d97706 25%,
+                #f59e0b 50%,
+                #d97706 75%,
+                #f59e0b 100%
+            );
+            background-size: 200% 100%;
+            color: white;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.05rem;
+            z-index: 10000;
+            box-shadow:
+                0 4px 15px rgba(245, 158, 11, 0.4),
+                0 2px 5px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            animation: slideDown 0.5s ease-out, gradientShift 3s ease-in-out infinite;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+            border-bottom: 3px solid rgba(217, 119, 6, 0.6);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .construction-banner::before {
+            content: '🚧';
+            margin-right: 0.75rem;
+            font-size: 1.3rem;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .construction-banner::after {
+            content: '🚧';
+            margin-left: 0.75rem;
+            font-size: 1.3rem;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+
+        header {
+            position: fixed;
+            left: 0;
+            top: 50px;
+            width: 220px;
+            height: calc(100vh - 50px);
+            background: linear-gradient(180deg, #3d5a5c 0%, #4a6b6d 100%);
+            color: white;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        nav {
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1rem;
+            height: 100%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo img {
+            height: 80px;
+            width: auto;
+            background: white;
+            padding: 8px 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .logo img:hover {
+            box-shadow: 0 6px 20px rgba(242, 101, 34, 0.4);
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-links li {
+            width: 100%;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0.75rem;
+            min-width: 44px;
+            min-height: 44px;
+            touch-action: manipulation;
+        }
+
+        section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #3d3027;
+            text-align: center;
+        }
+
+        .calculator-section {
+            background: #f8f9fa;
+        }
+
+        .calculator-intro {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            color: #3d3027;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-group {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 3rem;
+        }
+
+        .input-group h3 {
+            color: #3d5a5c;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3d5a5c;
+            box-shadow: 0 0 0 4px rgba(61, 90, 92, 0.1);
+        }
+
+        .unit-suffix {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .info-note {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1) 0%, rgba(52, 152, 219, 0.15) 100%);
+            border-left: 4px solid #3498db;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-top: 1.2rem;
+            color: #2c3e50;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .result-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .result-card h3 {
+            color: #3d5a5c;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .result-card.savings {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05) 0%, rgba(39, 174, 96, 0.1) 100%);
+            border: 2px solid #27ae60;
+        }
+
+        .result-card.savings h3 {
+            color: #27ae60;
+        }
+
+        .result-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #3d5a5c;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card.savings .result-value {
+            color: #27ae60;
+        }
+
+        .result-label {
+            color: #6c757d;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .breakdown {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            font-size: 0.95rem;
+        }
+
+        .breakdown-item.highlight {
+            font-weight: 600;
+            background: rgba(243, 156, 18, 0.1);
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown-item.sub {
+            padding-left: 1.5rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .breakdown-item.total {
+            font-weight: 700;
+            border-top: 2px solid #dee2e6;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #3d5a5c 0%, #4a6b6d 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            margin: 3rem 0;
+        }
+
+        .info-box h3 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            padding: 0.6rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .info-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #f39c12;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .tariff-info {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .tariff-info h4 {
+            color: #3d5a5c;
+            margin-bottom: 1.2rem;
+            font-size: 1.2rem;
+        }
+
+        .tariff-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tariff-info li {
+            padding: 0.5rem 0;
+            color: #555;
+        }
+
+        .tariff-info .highlight {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 8px;
+        }
+
+        footer {
+            background: #3d3027;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            transition: opacity 0.3s;
+        }
+
+        footer a:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                margin-left: 0;
+                margin-top: 120px;
+                padding-top: 0;
+            }
+
+            .construction-banner {
+                font-size: 0.9rem;
+                padding: 0.6rem 0.5rem;
+            }
+
+            header {
+                position: fixed;
+                width: 100%;
+                height: auto;
+                top: 50px;
+                left: 0;
+            }
+
+            nav {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 1rem;
+                height: auto;
+            }
+
+            .logo {
+                margin-bottom: 0;
+            }
+
+            .logo img {
+                height: 50px;
+            }
+
+            .mobile-menu-btn {
+                display: block !important;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: #3d5a5c;
+                padding: 0;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+                animation: slideDown 0.3s ease-out;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .nav-links a {
+                padding: 1.25rem 1.5rem;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+
+            section {
+                padding: 2rem 1rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .input-group {
+                padding: 1.5rem;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-value {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="construction-banner">
+        Under Construction - Diese Seite befindet sich noch im Aufbau
+    </div>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="PV-Stromfischer.png" alt="PV-Stromfischer Logo">
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" onclick="closeMenu()">Home</a></li>
+                <li><a href="dashboard.html" onclick="closeMenu()">Live Dashboard</a></li>
+                <li><a href="tarife.html" onclick="closeMenu()">Tarife & Rechner</a></li>
+                <li><a href="ersparnis-rechner.html" onclick="closeMenu()">Ersparnis-Rechner</a></li>
+                <li><a href="anmeldung/" onclick="closeMenu()">Anmeldung</a></li>
+                <li><a href="index.html#contact" onclick="closeMenu()">Kontakt</a></li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+        </nav>
+    </header>
+
+    <section class="calculator-section">
+        <h2>💰 Ersparnis-Rechner</h2>
+
+        <div class="calculator-intro">
+            <p>Berechnen Sie Ihre jährliche Ersparnis als Mitglied der Energiegemeinschaft PV-Stromfischer. Der Rechner berücksichtigt den günstigen EEG-Bezugstarif, reduzierte Netzkosten und entfallende Abgaben.</p>
+        </div>
+
+        <div class="input-group">
+            <h3>⚡ Ihr Stromverbrauch</h3>
+            <div class="form-group">
+                <label for="consumption">Jährlicher Strombezug <span class="unit-suffix">kWh</span></label>
+                <input type="number" id="consumption" placeholder="z.B. 3500" value="3500" min="0" step="100">
+            </div>
+            <p style="color: #6c757d; font-size: 0.95rem; margin-top: 0.8rem;">
+                💡 Tipp: Ein durchschnittlicher Haushalt in Österreich verbraucht etwa 3.500 kWh pro Jahr
+            </p>
+            <div class="info-note">
+                <strong>ℹ️ Hinweis:</strong> Diese Berechnung geht davon aus, dass ca. <strong>ein Drittel (33%)</strong> Ihres Strombezugs aus der Energiegemeinschaft mit den entsprechenden Vergünstigungen kommt. Die restlichen zwei Drittel werden zu normalen Konditionen vom Stromanbieter bezogen.
+            </div>
+        </div>
+
+        <div class="results-grid" id="results">
+            <!-- Results will be displayed here -->
+        </div>
+
+        <div class="info-box">
+            <h3>📋 Wie berechnet sich die Ersparnis?</h3>
+            <ul>
+                <li><strong>Etwa 1/3 Ihres Strombezugs</strong> kommt aus der Energiegemeinschaft mit allen Vorteilen</li>
+                <li><strong>Günstiger EEG-Bezugstarif</strong> - 11 Cent/kWh statt durchschnittlich 25 Cent/kWh am Markt</li>
+                <li><strong>28% Rabatt auf Netzkosten</strong> - Sie zahlen nur 72% der normalen Netzentgelte (5,47 statt 7,6 Cent/kWh)</li>
+                <li><strong>Entfall der Elektrizitätsabgabe</strong> (1,5 Cent/kWh entfällt komplett)</li>
+                <li><strong>Entfall des Erneuerbaren-Förderbeitrags</strong> (0,8 Cent/kWh entfällt komplett)</li>
+                <li>Die restlichen 2/3 werden normal vom Stromanbieter bezogen (zu normalen Konditionen)</li>
+                <li><strong>Mitgliedsbeitrag</strong> - 10 € pro Jahr für die EEG-Mitgliedschaft (eingerechnet)</li>
+            </ul>
+        </div>
+
+        <div class="tariff-info">
+            <h4>Verwendete Tarife (Stand 2025):</h4>
+            <ul>
+                <li>• <strong>Normaler Strompreis:</strong> 25 Cent/kWh (durchschnittlicher Marktpreis)</li>
+                <li>• <strong>EEG-Bezugstarif:</strong> <span id="tarif-bezug-display">11</span> Cent/kWh (PV-Stromfischer)</li>
+                <li>• <strong>Netzentgelte (Netz OÖ):</strong> 7,6 Cent/kWh (mit EEG: 5,47 Cent/kWh)</li>
+                <li>• <strong>Elektrizitätsabgabe:</strong> 1,5 Cent/kWh (mit EEG: entfällt)</li>
+                <li>• <strong>Erneuerbaren-Förderbeitrag:</strong> 0,796 Cent/kWh (mit EEG: entfällt)</li>
+                <li>• <strong>Mitgliedsbeitrag:</strong> <span id="tarif-mitgliedsbeitrag-display">10</span> € pro Jahr (brutto)</li>
+            </ul>
+            <div class="highlight">
+                <strong>📊 EEG-Bezugsanteil:</strong> 33% (ca. ein Drittel) aus der Energiegemeinschaft
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.85rem; color: #6c757d;">
+                Alle Preise exkl. 20% USt. Der durchschnittliche Marktpreis variiert je nach Anbieter. Die Berechnung basiert auf einem durchschnittlichen EEG-Anteil von ca. einem Drittel des Gesamtverbrauchs. Die tatsächlichen Ersparnisse können je nach individuellem Tarif, Verbrauchsprofil und tatsächlichem EEG-Bezug abweichen.
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 PV-Stromfischer | Energiegemeinschaft Stadl-Paura</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            <a href="mailto:office@pv-stromfischer.at">office@pv-stromfischer.at</a> |
+            <a href="https://www.pv-stromfischer.at" target="_blank">www.pv-stromfischer.at</a>
+        </p>
+    </footer>
+
+    <!-- Zentrale Tarif-Konfiguration -->
+    <script src="tarife-config.js"></script>
+
+    <script>
+        // Navigation
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        function closeMenu() {
+            document.getElementById('navLinks').classList.remove('active');
+        }
+
+        // Tarife 2025 (in Euro pro kWh, netto)
+        const TARIFE = {
+            strompreisNormal: 0.25,        // 25 Cent/kWh (durchschnittlicher Marktpreis)
+            strompreisEEG: PV_STROMFISCHER_TARIFE.bezugstarif / 100,  // Von zentraler Konfiguration (in Euro umrechnen)
+            netzentgelte: 0.076,           // 7,6 Cent/kWh
+            elektrizitaetsabgabe: 0.015,   // 1,5 Cent/kWh
+            erneuerbarenBeitrag: 0.00796,  // 0,796 Cent/kWh (Netznutzung + Netzverluste)
+            ustSatz: 0.20,                  // 20% Umsatzsteuer
+            mitgliedsbeitrag: PV_STROMFISCHER_TARIFE.mitgliedsbeitrag  // Von zentraler Konfiguration
+        };
+
+        const EEG_RABATT = 0.28; // 28% Rabatt auf Netzkosten
+        const EEG_ANTEIL = 0.333; // Ca. 1/3 des Bezugs kommt aus der EEG
+
+        function berechneKosten(verbrauch) {
+            // Aufteilung: ca. 1/3 aus EEG, 2/3 vom normalen Anbieter
+            const verbrauchEEG = verbrauch * EEG_ANTEIL;
+            const verbrauchNormal = verbrauch * (1 - EEG_ANTEIL);
+
+            // Normale Kosten (100% vom normalen Stromanbieter) - OHNE EEG-Mitgliedschaft
+            const normalStrompreis = verbrauch * TARIFE.strompreisNormal;
+            const normalNetzkosten = verbrauch * TARIFE.netzentgelte;
+            const normalElektrizitaetsabgabe = verbrauch * TARIFE.elektrizitaetsabgabe;
+            const normalErneuerbarenBeitrag = verbrauch * TARIFE.erneuerbarenBeitrag;
+            const normalNetto = normalStrompreis + normalNetzkosten + normalElektrizitaetsabgabe + normalErneuerbarenBeitrag;
+            const normalBrutto = normalNetto * (1 + TARIFE.ustSatz);
+
+            // Kosten MIT EEG-Mitgliedschaft (gemischt)
+            // Teil 1: 1/3 aus der EEG (mit Vergünstigungen)
+            const eegTeilStrompreis = verbrauchEEG * TARIFE.strompreisEEG;
+            const eegTeilNetzkosten = verbrauchEEG * TARIFE.netzentgelte * (1 - EEG_RABATT);
+            const eegTeilAbgaben = 0; // Elektrizitätsabgabe und Erneuerbaren-Beitrag entfallen
+            const eegTeilNetto = eegTeilStrompreis + eegTeilNetzkosten + eegTeilAbgaben;
+
+            // Teil 2: 2/3 vom normalen Anbieter (ohne Vergünstigungen)
+            const normalTeilStrompreis = verbrauchNormal * TARIFE.strompreisNormal;
+            const normalTeilNetzkosten = verbrauchNormal * TARIFE.netzentgelte;
+            const normalTeilElektrizitaetsabgabe = verbrauchNormal * TARIFE.elektrizitaetsabgabe;
+            const normalTeilErneuerbarenBeitrag = verbrauchNormal * TARIFE.erneuerbarenBeitrag;
+            const normalTeilNetto = normalTeilStrompreis + normalTeilNetzkosten + normalTeilElektrizitaetsabgabe + normalTeilErneuerbarenBeitrag;
+
+            // Gesamtkosten mit EEG-Mitgliedschaft (inkl. Mitgliedsbeitrag)
+            const mitEEGNetto = eegTeilNetto + normalTeilNetto;
+            const mitEEGBrutto = mitEEGNetto * (1 + TARIFE.ustSatz) + TARIFE.mitgliedsbeitrag;
+
+            // Ersparnis
+            const ersparnisNetto = normalNetto - mitEEGNetto;
+            const ersparnisBrutto = normalBrutto - mitEEGBrutto;
+            const ersparnisProzent = (ersparnisNetto / normalNetto) * 100;
+
+            return {
+                normal: {
+                    strompreis: normalStrompreis,
+                    netzkosten: normalNetzkosten,
+                    elektrizitaetsabgabe: normalElektrizitaetsabgabe,
+                    erneuerbarenBeitrag: normalErneuerbarenBeitrag,
+                    netto: normalNetto,
+                    brutto: normalBrutto
+                },
+                mitEEG: {
+                    verbrauchEEG: verbrauchEEG,
+                    verbrauchNormal: verbrauchNormal,
+                    eegTeil: {
+                        strompreis: eegTeilStrompreis,
+                        netzkosten: eegTeilNetzkosten,
+                        abgaben: eegTeilAbgaben,
+                        netto: eegTeilNetto
+                    },
+                    normalTeil: {
+                        strompreis: normalTeilStrompreis,
+                        netzkosten: normalTeilNetzkosten,
+                        elektrizitaetsabgabe: normalTeilElektrizitaetsabgabe,
+                        erneuerbarenBeitrag: normalTeilErneuerbarenBeitrag,
+                        netto: normalTeilNetto
+                    },
+                    netto: mitEEGNetto,
+                    brutto: mitEEGBrutto
+                },
+                ersparnis: {
+                    netto: ersparnisNetto,
+                    brutto: ersparnisBrutto,
+                    prozent: ersparnisProzent
+                }
+            };
+        }
+
+        function formatEuro(betrag) {
+            return new Intl.NumberFormat('de-AT', {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(betrag);
+        }
+
+        function aktualisieren() {
+            const verbrauch = parseFloat(document.getElementById('consumption').value) || 0;
+
+            if (verbrauch <= 0) {
+                document.getElementById('results').innerHTML = '<p style="text-align: center; color: #6c757d; grid-column: 1/-1;">Bitte geben Sie Ihren Stromverbrauch ein.</p>';
+                return;
+            }
+
+            const kosten = berechneKosten(verbrauch);
+
+            document.getElementById('results').innerHTML = `
+                <div class="result-card">
+                    <h3>🔌 Ohne Energiegemeinschaft</h3>
+                    <div class="result-value">${formatEuro(kosten.normal.brutto)}</div>
+                    <div class="result-label">pro Jahr (inkl. USt)</div>
+                    <div class="breakdown">
+                        <div class="breakdown-item">
+                            <span>Strompreis (25 Cent/kWh):</span>
+                            <span>${formatEuro(kosten.normal.strompreis)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Netzentgelte:</span>
+                            <span>${formatEuro(kosten.normal.netzkosten)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Elektrizitätsabgabe:</span>
+                            <span>${formatEuro(kosten.normal.elektrizitaetsabgabe)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Erneuerbaren-Förderbeitrag:</span>
+                            <span>${formatEuro(kosten.normal.erneuerbarenBeitrag)}</span>
+                        </div>
+                        <div class="breakdown-item total">
+                            <span>Summe (netto):</span>
+                            <span>${formatEuro(kosten.normal.netto)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>+ 20% USt:</span>
+                            <span>${formatEuro(kosten.normal.netto * TARIFE.ustSatz)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>⚡ Mit Energiegemeinschaft</h3>
+                    <div class="result-value">${formatEuro(kosten.mitEEG.brutto)}</div>
+                    <div class="result-label">pro Jahr (inkl. USt)</div>
+                    <div class="breakdown">
+                        <div class="breakdown-item highlight">
+                            <span>🔆 ${kosten.mitEEG.verbrauchEEG.toFixed(0)} kWh aus EEG (33%):</span>
+                            <span>${formatEuro(kosten.mitEEG.eegTeil.netto)}</span>
+                        </div>
+                        <div class="breakdown-item sub">
+                            <span>└ Bezugstarif 11 Cent/kWh:</span>
+                            <span>${formatEuro(kosten.mitEEG.eegTeil.strompreis)}</span>
+                        </div>
+                        <div class="breakdown-item sub">
+                            <span>└ Reduzierte Netzkosten:</span>
+                            <span>${formatEuro(kosten.mitEEG.eegTeil.netzkosten)}</span>
+                        </div>
+                        <div class="breakdown-item sub">
+                            <span>└ Keine Abgaben:</span>
+                            <span>${formatEuro(0)} ✓</span>
+                        </div>
+
+                        <div class="breakdown-item highlight" style="background: rgba(108, 117, 125, 0.1); margin-top: 0.8rem;">
+                            <span>⚡ ${kosten.mitEEG.verbrauchNormal.toFixed(0)} kWh vom Anbieter (67%):</span>
+                            <span>${formatEuro(kosten.mitEEG.normalTeil.netto)}</span>
+                        </div>
+                        <div class="breakdown-item sub">
+                            <span>└ Strompreis 25 Cent/kWh:</span>
+                            <span>${formatEuro(kosten.mitEEG.normalTeil.strompreis)}</span>
+                        </div>
+                        <div class="breakdown-item sub">
+                            <span>└ Volle Netzkosten:</span>
+                            <span>${formatEuro(kosten.mitEEG.normalTeil.netzkosten)}</span>
+                        </div>
+                        <div class="breakdown-item sub">
+                            <span>└ Abgaben:</span>
+                            <span>${formatEuro(kosten.mitEEG.normalTeil.elektrizitaetsabgabe + kosten.mitEEG.normalTeil.erneuerbarenBeitrag)}</span>
+                        </div>
+
+                        <div class="breakdown-item total">
+                            <span>Summe (netto):</span>
+                            <span>${formatEuro(kosten.mitEEG.netto)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>+ 20% USt:</span>
+                            <span>${formatEuro(kosten.mitEEG.netto * TARIFE.ustSatz)}</span>
+                        </div>
+                        <div class="breakdown-item" style="border-top: 1px dashed #dee2e6; margin-top: 0.8rem; padding-top: 0.8rem;">
+                            <span>+ Mitgliedsbeitrag:</span>
+                            <span>${formatEuro(TARIFE.mitgliedsbeitrag)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card savings">
+                    <h3>🎉 Ihre Ersparnis</h3>
+                    <div class="result-value">${formatEuro(kosten.ersparnis.brutto)}</div>
+                    <div class="result-label">pro Jahr (inkl. USt)</div>
+                    <div class="breakdown">
+                        <div class="breakdown-item">
+                            <span>Ersparnis (netto):</span>
+                            <span>${formatEuro(kosten.ersparnis.netto)}</span>
+                        </div>
+                        <div class="breakdown-item">
+                            <span>Ersparnis in %:</span>
+                            <span>${kosten.ersparnis.prozent.toFixed(1)}%</span>
+                        </div>
+                        <div class="breakdown-item total" style="color: #27ae60;">
+                            <span>💰 Pro Monat:</span>
+                            <span>${formatEuro(kosten.ersparnis.brutto / 12)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Tarif-Anzeige aktualisieren
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('tarif-bezug-display').textContent = PV_STROMFISCHER_TARIFE.bezugstarif;
+            document.getElementById('tarif-mitgliedsbeitrag-display').textContent = PV_STROMFISCHER_TARIFE.mitgliedsbeitrag;
+        });
+
+        // Event Listener
+        document.getElementById('consumption').addEventListener('input', aktualisieren);
+
+        // Initial calculation
+        aktualisieren();
+    </script>
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Dashboard - PV-Stromfischer</title>
+    <link rel="icon" type="image/png" href="PV-Stromfischer.png">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #e8e8e8;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #FF6B35;
+            --accent-dark: #E85A2B;
+            --green: #10b981;
+            --orange: #f59e0b;
+            --border: #d0d0d0;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border: #333333;
+            --shadow: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border-bottom: 2px solid var(--border);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .logo img {
+            height: 45px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .theme-toggle {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            width: 60px;
+            height: 32px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            left: 2px;
+            top: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        [data-theme="dark"] .theme-toggle::before {
+            transform: translateX(28px);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .page-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 2.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: var(--accent);
+            transition: height 0.3s ease;
+        }
+
+        .dashboard-card:hover::before {
+            height: 100%;
+        }
+
+        .dashboard-card:hover {
+            background: var(--bg-primary);
+        }
+
+        .card-header {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-value {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1;
+            margin: 2rem 0;
+        }
+
+        .card-label {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-status {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            margin-top: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Chart Section */
+        .chart-section {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .chart-info {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--border);
+        }
+
+        /* Footer Info */
+        .dashboard-footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 2px solid var(--border);
+            margin-top: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .status-online {
+            color: var(--green);
+        }
+
+        .status-offline {
+            color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--border);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: var(--bg-primary);
+            padding: 3rem;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            font-size: 1.5rem;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            letter-spacing: -0.5px;
+        }
+
+        .modal-content h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 400px;
+                height: 100vh;
+                background: var(--bg-primary);
+                border-left: 2px solid var(--border);
+                flex-direction: column;
+                padding: 6rem 2rem;
+                gap: 2rem;
+                transition: right 0.3s ease;
+                align-items: flex-start;
+            }
+
+            .nav-links.active {
+                right: 0;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-value {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="PV-Stromfischer.png" alt="Logo">
+                PV-STROMFISCHER
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="index.html#features">VORTEILE</a></li>
+                <li><a href="index.html#about">ÜBER UNS</a></li>
+                <li><a href="dashboard.html">DASHBOARD</a></li>
+                <li><a href="tarife.html">TARIFE</a></li>
+                <li><a href="anmeldung/">ANMELDUNG</a></li>
+                <li><a href="index.html#contact">KONTAKT</a></li>
+                <li>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Theme Toggle"></button>
+                </li>
+            </ul>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">LIVE DASHBOARD</h1>
+            <p class="page-subtitle">Echtzeit-Daten unserer Energiegemeinschaft</p>
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">⚡ AKTUELLE LEISTUNG</div>
+                <div class="card-value" id="currentPower" style="color: var(--accent);">0.0</div>
+                <div class="card-label">kW</div>
+                <div class="card-status" id="powerStatus">
+                    Lade Daten...
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="chart-section">
+            <div class="chart-header">📊 LEISTUNGSVERLAUF (12 STUNDEN)</div>
+            <canvas id="powerChart"></canvas>
+            <div class="chart-info">
+                ℹ️ Positive Werte (orange) = Bezug aus dem Netz | Negative Werte (grün) = Einspeisung ins Netz<br>
+                Datenpunkte alle 30 Minuten über die letzten 12 Stunden
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="dashboard-footer">
+            <span id="lastUpdate">Letztes Update: --:--:--</span> |
+            <span id="connectionStatus" class="status-online">● Verbunden</span>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="index.html">Hauptseite</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="tarife.html">Tarife</a>
+                <a href="#" onclick="showModal('imprintModal'); return false;">Impressum</a>
+                <a href="#" onclick="showModal('privacyModal'); return false;">Datenschutz</a>
+            </div>
+            <p>&copy; 2025 PV-Stromfischer | Energiegemeinschaft Stadl-Paura</p>
+        </div>
+    </footer>
+
+    <!-- Impressum Modal -->
+    <div id="imprintModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('imprintModal')">×</button>
+            <h2>IMPRESSUM</h2>
+            <h3>Informationspflicht laut §5 E-Commerce Gesetz</h3>
+            <p><strong>Verein PV-Stromfischer</strong></p>
+            <p>Schwanenstädter Straße 40<br>
+            4651 Stadl-Hausruck<br>
+            Österreich</p>
+
+            <p><strong>Organschaftliche Vertreter:</strong><br>
+            Manuel Benning<br>
+            Christoph Wind</p>
+
+            <p><strong>ZVR-Zahl:</strong> 1150769458</p>
+
+            <p><strong>E-Mail:</strong> <a href="mailto:Office@PV-Stromfischer.at">Office@PV-Stromfischer.at</a></p>
+
+            <h3>Haftungsausschluss</h3>
+            <p>Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.</p>
+        </div>
+    </div>
+
+    <!-- Datenschutz Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+            <h2>DATENSCHUTZ</h2>
+
+            <h3>Datenschutzerklärung</h3>
+            <p>Wir haben diese Datenschutzerklärung verfasst, um Ihnen gemäß der Vorgaben der Datenschutz-Grundverordnung (EU) 2016/679 zu erklären, welche Informationen wir sammeln und wie wir Daten verwenden.</p>
+
+            <h3>Kontaktdaten</h3>
+            <p>Wenn Sie uns per E-Mail kontaktieren, werden Ihre angegebenen Daten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.</p>
+
+            <h3>Live Dashboard</h3>
+            <p>Das Live Dashboard zeigt öffentlich zugängliche Daten zur aktuellen Energieproduktion unserer Gemeinschaft. Es werden keine personenbezogenen Daten einzelner Mitglieder angezeigt oder gespeichert.</p>
+
+            <h3>Ihre Rechte</h3>
+            <p>Ihnen stehen grundsätzlich die Rechte auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit, Widerruf und Widerspruch zu.</p>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+        });
+
+        // Mobile menu
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('navLinks').classList.remove('active');
+            });
+        });
+
+        // Modal Functions
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Dashboard mit InfluxDB Proxy
+        const PROXY_URL = './influx-proxy.php';
+        let powerChart = null;
+
+        async function fetchCurrentData() {
+            try {
+                const response = await fetch(`${PROXY_URL}?action=current`);
+                const data = await response.json();
+
+                if (data && data.results && data.results[0].series) {
+                    const value = data.results[0].series[0].values[0][1];
+                    updateDisplay(value);
+                    document.getElementById('connectionStatus').innerHTML = '● Verbunden';
+                    document.getElementById('connectionStatus').className = 'status-online';
+                } else {
+                    throw new Error('Keine Daten');
+                }
+            } catch (error) {
+                console.error('Fehler beim Abrufen der Daten:', error);
+                document.getElementById('connectionStatus').innerHTML = '● Verbindungsfehler';
+                document.getElementById('connectionStatus').className = 'status-offline';
+            }
+
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent =
+                `Letztes Update: ${now.toLocaleTimeString('de-DE')}`;
+        }
+
+        function updateDisplay(watts) {
+            const kw = (watts / 1000).toFixed(1);
+            const powerElement = document.getElementById('currentPower');
+            const statusElement = document.getElementById('powerStatus');
+
+            if (watts > 0) {
+                // Bezug (positiv) - ORANGE
+                powerElement.style.color = '#f59e0b';
+                powerElement.textContent = kw;
+                statusElement.textContent = '⬇️ BEZUG AUS DEM NETZ';
+                statusElement.style.color = '#f59e0b';
+                statusElement.style.borderColor = '#f59e0b';
+            } else {
+                // Einspeisung (negativ) - GRÜN
+                powerElement.style.color = '#10b981';
+                powerElement.textContent = Math.abs(kw);
+                statusElement.textContent = '⬆️ EINSPEISUNG INS NETZ';
+                statusElement.style.color = '#10b981';
+                statusElement.style.borderColor = '#10b981';
+            }
+        }
+
+        async function init12HourChart() {
+            const ctx = document.getElementById('powerChart').getContext('2d');
+            let labels = [];
+            let powerData = [];
+
+            try {
+                const response = await fetch(`${PROXY_URL}?action=history12h`);
+                const data = await response.json();
+
+                if (data && data.results && data.results[0].series) {
+                    const values = data.results[0].series[0].values;
+
+                    values.forEach(point => {
+                        const timestamp = new Date(point[0]);
+                        labels.push(timestamp.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }));
+                        const kw = point[1] !== null ? point[1] / 1000 : 0;
+                        powerData.push(kw);
+                    });
+                } else {
+                    for (let i = 0; i < 24; i++) {
+                        labels.push('--:--');
+                        powerData.push(0);
+                    }
+                }
+            } catch (error) {
+                console.error('Fehler beim Abrufen der Verlaufsdaten:', error);
+                for (let i = 0; i < 24; i++) {
+                    labels.push('--:--');
+                    powerData.push(0);
+                }
+            }
+
+            powerChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Leistung (kW)',
+                        data: powerData,
+                        borderColor: '#FF6B35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        segment: {
+                            borderColor: ctx => {
+                                const value = ctx.p1.parsed.y;
+                                return value > 0 ? '#f59e0b' : '#10b981';
+                            },
+                            backgroundColor: ctx => {
+                                const value = ctx.p1.parsed.y;
+                                return value > 0 ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)';
+                            }
+                        },
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: function(context) {
+                            const value = context.parsed.y;
+                            return value > 0 ? '#f59e0b' : '#10b981';
+                        }
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    const value = context.parsed.y;
+                                    label += value.toFixed(2) + ' kW';
+                                    label += value > 0 ? ' (Bezug)' : ' (Einspeisung)';
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Leistung (kW)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Uhrzeit'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function refresh12HourChart() {
+            if (powerChart) {
+                powerChart.destroy();
+            }
+            await init12HourChart();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchCurrentData();
+            setInterval(fetchCurrentData, 5000);
+            init12HourChart();
+            setInterval(refresh12HourChart, 5 * 60 * 1000);
+        });
+    </script>
+</body>
+</html>

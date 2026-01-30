@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body { font-family: Arial; padding: 20px; }
+.test { border: 2px solid #ccc; padding: 10px; margin: 10px 0; }
+.desktop { background: #e8f5e9; }
+.mobile { background: #e3f2fd; }
+@media (max-width: 768px) {
+    .desktop { display: none; }
+}
+@media (min-width: 769px) {
+    .mobile { display: none; }
+}
+</style>
+</head>
+<body>
+<h2>Navigation Test</h2>
+<div class="test desktop">
+<h3>Desktop View (> 768px)</h3>
+<p>✓ You should see: Left sidebar navigation</p>
+<p>✓ No hamburger button</p>
+</div>
+<div class="test mobile">
+<h3>Mobile View (<= 768px)</h3>
+<p>✓ You should see: Hamburger button (☰)</p>
+<p>✓ Click it to toggle navigation menu</p>
+<p>✓ Menu slides down with animation</p>
+</div>
+<hr>
+<p><a href="index.html">Go to Main Page</a></p>
+</body>
+</html>
